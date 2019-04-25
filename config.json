@@ -1,0 +1,74 @@
+{
+    "name": "nedCAPTCHA",
+    "namespace": "RUB\\NEDCaptchaExternalModule",
+    "description": "Adds CATPCHA protection to surveys. <strong><a href=\"https://github.com/grezniczek/redcap-nedcaptcha\">See full documentation here</a></strong>.",
+    "framework-version": 2,
+    "permissions": [
+        "redcap_survey_page_top"
+    ],
+    "authors": [
+        {
+            "name": "Günther Rezniczek",
+            "email": "guenther.rezniczek@rub.de",
+            "institution": "Ruhr-Universität Bochum"
+        }
+    ],
+    "system-settings": [
+        {
+            "key": "nedcaptcha_globaldebug",
+            "name": "Global - Debug Mode",
+            "type": "checkbox",
+            "repeatable": false
+        }
+    ],
+    "project-settings": [
+        {
+            "key": "nedcaptcha_debug",
+            "name": "Debug Mode",
+            "type": "checkbox",
+            "super-users-only": true,
+            "repeatable": false
+        },
+        {
+            "key": "nedcaptcha_type",
+            "name": "CAPTCHA Type (default: Math)",
+            "type": "dropdown",
+            "choices": [
+                { "value": "none", "name": "None (Inactive)" },
+                { "value": "math", "name": "Simple Math Problem" },
+                { "value": "image", "name": "Distorted Text Image" }
+            ],
+            "repeatable": false
+        },
+        {
+            "key": "nedcaptcha_intro",
+            "name": "Text to be displayed below the survey title (by default, no text is displayed)",
+            "type": "textarea",
+            "repeatable": false
+        },
+        {
+            "key": "nedcaptcha_label",
+            "name": "Text to be displayed as the CAPTCHA label (depending on the CAPTCHA type, this defaults to 'Please type in the text exactly as displayed' or 'Please solve this math problem:')",
+            "type": "textarea",
+            "repeatable": false
+        },
+        {
+            "key": "nedcaptcha_submit",
+            "name": "Submit label (defaults to 'Submit')",
+            "type": "text",
+            "repeatable": false
+        },
+        {
+            "key": "nedcaptcha_failmsg",
+            "name": "Fail message (defaults to 'Validation failed. Please try again.')",
+            "type": "textarea",
+            "repeatable": false
+        }
+    ],
+    "compatibility": {
+        "php-version-min": "5.6.0",
+        "php-version-max": "",
+        "redcap-version-min": "8.1.0",
+        "redcap-version-max": ""
+     }
+}
