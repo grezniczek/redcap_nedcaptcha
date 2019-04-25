@@ -24,8 +24,9 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
      */
     function redcap_survey_page_top($project_id, $record, $instrument, $event_id, $group_id, $survey_hash, $response_id, $repeat_instance = 1) 
     {
-        // Skip the CAPTCHA if a record is already defined.
-        if (!empty($record)) return false;
+        // Skip the CAPTCHA if a record is already defined or it is set to inactive.
+        if (!empty($record) || $this->settings->type == "none") return false;
+        
 
         // Has the user already solved a CAPTCHA during her session? (Always show when debugging)
         if (!$this->settings->debug && isset($_SESSION["{$this->PREFIX}-success"]) && $_SESSION["{$this->PREFIX}-success"] === true) return false;
