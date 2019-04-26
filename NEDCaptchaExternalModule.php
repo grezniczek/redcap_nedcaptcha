@@ -70,9 +70,12 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             ));
             $label = $this->settings->type == "custom" && !strlen($this->settings->label) ? $captcha->challenge : $this->settings->label;
             $challenge = $this->settings->type == "custom" && !strlen($this->settings->label) ? "" : $captcha->challenge;
+            // Need to specify the action and add _startover or else REDCap will swallow the survey instructions, as we arrive with a POST and not a GET.
+            $action = APP_PATH_SURVEY_FULL . "?" . $_SERVER["QUERY_STRING"] . (strpos($_SERVER["QUERY_STRING"], "__startover") ? "" : "&__startover");
             $template = file_get_contents(dirname(__FILE__)."/ui.html");
             $replace = array(
                 "{PREFIX}" => $this->PREFIX,
+                "{ACTION}" => $action,
                 "{SURVEYTITLE}" => $GLOBALS["title"],
                 "{INSTRUCTIONS}" => $this->settings->intro,
                 "{LABEL}" => $label,
