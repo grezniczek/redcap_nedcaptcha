@@ -46,14 +46,14 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
 
         if ($is_postback) {
             // Verify response.
-            $response = $_POST["{$this->PREFIX}-response"];
+            $response = strtolower(trim($_POST["{$this->PREFIX}-response"]));
             $blob = $_POST["{$this->PREFIX}-blob"];
 
             $result = $this->validate($response, $blob);
             if (!$result["success"]) $failMsgDisplay = "block";
         }
 
-        $debug = "<script>console.log('Debug Info');</script>";
+        $debug = ""; //"<script>console.log('Debug Info');</script>";
 
         if (!$result["success"]) {
             // Pepare CAPTCHA.
@@ -65,19 +65,22 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
                 "instrument" => $instrument,
                 "event_id" => $event_id,
                 "repeat_instance" => $repeat_instance,
-                "expected" => $captcha->challenge,
+                "timestamp" => (new \DateTime())->getTimestamp(),
+                "expected" => $captcha->expected,
             ));
+            $label = $this->settings->type == "custom" && !strlen($this->settings->label) ? $captcha->challenge : $this->settings->label;
+            $challenge = $this->settings->type == "custom" && !strlen($this->settings->label) ? "" : $captcha->challenge;
             $template = file_get_contents(dirname(__FILE__)."/ui.html");
             $replace = array(
                 "{PREFIX}" => $this->PREFIX,
                 "{SURVEYTITLE}" => $GLOBALS["title"],
                 "{INSTRUCTIONS}" => $this->settings->intro,
-                "{LABEL}" => $this->settings->label,
+                "{LABEL}" => $label,
                 "{SUBMIT}" => $this->settings->submit,
                 "{FAILMSG}" => $this->settings->failmsg,
                 "{FAILMSGDISPLAY}" => $failMsgDisplay,
                 "{BLOB}" => $blob,
-                "{CAPTCHA}" => $captcha->output,
+                "{CAPTCHA}" => $challenge,
                 "{DEBUG}" => $this->settings->debug ? $debug : ""
             );
             print str_replace(array_keys($replace), array_values($replace), $template);
@@ -157,6 +160,13 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
                 $result["error"] = "Failed to decrypt blob.";
                 break;
             }
+            // Check timestamp expiration (max. 5 minutes).
+            if ((new \DateTime())->getTimestamp() - $data["timestamp"] > 300) {
+                $result["error"] = "Timeout.";
+                break;
+            }
+
+            // Keep note of challenge for eventual reuse.
             $result["challenge"] = $data["expected"];
             // Verify project id.
             $project_id = $data["project_id"];
@@ -164,7 +174,7 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
                 $result["error"] = "Project ID mismatch.";
                 break;
             }
-            // Check answer.k
+            // Check answer.
             if ($data["expected"] == $response) {
                 $result["success"] = true;
                 break;
@@ -186,42 +196,209 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
 class CaptchaGenerator
 {
     public $challenge;
-    public $output;
+    public $expected;
     public $error = null;
+    
 
-    public function __construct(CaptchaSettings $settings, $challenge = null)
+    private $operators = array ("+", "-", "x");
+    private $font;
+
+    public function __construct(CaptchaSettings $settings, $expected = null)
     {
-        $this->challenge = $challenge;
+        $this->font = dirname(__FILE__)."/AnonymousPro-Regular.ttf";
+        $this->expected = $expected;
         switch ($settings->type) {
-            case "math": {
+            case "math":
                 $this->math($settings);
                 break;
-            }
-            case "image": {
+            case "image":
                 $this->image($settings);
                 break;
-            }
+            case "custom":
+                $this->custom($settings);
+                break;
         }
     }
 
+    /**
+     * Prepares a custom CAPTCHA.
+     * 
+     * @param CaptchaSettings $settings
+     */
+    private function custom($settings) 
+    {
+        // Check that challenge-response pairs are available.
+        $n = count($settings->custom);
+        if ($n == 0) {
+            $this->error = "No custom challenge-response pairs defined.";
+            return false;
+        }
+        // Pick a random one.
+        $index = mt_rand(0, $n - 1);
+        $this->challenge = $settings->custom[$index]["challenge"];
+        $this->expected = trim(strtolower($settings->custom[$index]["response"]));
+    }
+
+    /**
+     * Prepares a math CAPTCHA.
+     * 
+     * @param CaptchaSettings $settings
+     */
     private function math($settings) 
     {
-        $this->challenge = "123";
-        $this->output = "Type '123' go win!";
+        $complex = $settings->complexity == "complex";
+        // Build the problem.
+        $nTerms = $complex ? 2 : 1;
+        $op = array();
+        $vals = array();
+        $problem = "";
+        for ($i = 0; $i <= $nTerms; $i++) {
+            $vals[$i] = mt_rand($settings->minvalue, $settings->maxvalue);
+        }
+        for ($i = 0; $i < $nTerms; $i++) {
+            $op[$i] = $this->operators[$complex ? mt_rand(0, 2) : 0];
+        }
+        // Necessary to add brackets? (for mixed mode problems)
+        $result = -1;
+        $ops = join("", $op);
+        // Do not do double multiplications as the numbers can become big.
+        if ($ops == "xx") $ops = "x+";
+        // Build problem and calculate result.
+        // Ensure non-negative results when subtractions are present.
+        switch ($ops) {
+            case "+":
+            case "++":
+                $problem = join(" + ", $vals);
+                $result = array_sum($vals);
+                break;
+            case "-": 
+                sort($vals);
+                $problem =  "{$vals[1]} - {$vals[0]}";
+                $result = $vals[1] - $vals[0];
+                break;
+            case "--":
+                sort($vals);
+                $result = $vals[2] - $vals[1] - $vals[0];
+                if ($result < 0) {
+                    $vals[2] = $vals[1] + $vals[0] + mt_rand($settings->minvalue, $settings->maxvalue);
+                    $result = $vals[2] - $vals[1] - $vals[0];
+                }
+                $problem = "{$vals[2]} - {$vals[1]} - {$vals[0]}";
+                break;
+            case "+-":
+                if ($vals[1] > $vals[2]) {
+                    $problem = "{$vals[0]} + {$vals[1]} - {$vals[2]}";
+                    $result = $vals[0] + $vals[1] - $vals[2];
+                }
+                else {
+                    $problem = "{$vals[0]} + {$vals[2]} - {$vals[1]}";
+                    $result = $vals[0] + $vals[2] - $vals[1];
+                }
+                break;
+            case "-+":
+                if ($vals[0] > $vals[1]) {
+                    $problem = "{$vals[0]} - {$vals[1]} + {$vals[2]}";
+                    $result = $vals[0] - $vals[1] + $vals[2];
+                }
+                else {
+                    $problem = "{$vals[1]} - {$vals[0]} + {$vals[2]}";
+                    $result = $vals[1] - $vals[0] + $vals[2];
+                }
+                break;
+            case "x":
+            case "xx":
+                $problem = join(" × ", $vals);
+                $result = 1;
+                foreach ($vals as $v) $result = $result * $v;
+                break;
+            case "x+":
+                $problem = "{$vals[0]} × ( {$vals[1]} + {$vals[2]} )";
+                $result = $vals[0] * ($vals[1] + $vals[2]);
+                break;
+            case "+x":
+                $problem = "( {$vals[0]} + {$vals[1]} ) × {$vals[2]}";
+                $result = ($vals[0] + $vals[1]) * $vals[2];
+                break;
+            case "x-":
+                if ($vals[1] > $vals[2]) {
+                    $problem = "{$vals[0]} × ( {$vals[1]} - {$vals[2]} )";
+                    $result = $vals[0] * ($vals[1] - $vals[2]);
+                }
+                else {
+                    $problem = "{$vals[0]} × ( {$vals[2]} - {$vals[1]} )";
+                    $result = $vals[0] * ($vals[2] - $vals[1]);
+                }
+                break;
+            case "-x":
+                if ($vals[0] > $vals[1]) {
+                    $problem = "( {$vals[0]} - {$vals[1]} ) × {$vals[2]}";
+                    $result = ($vals[0] - $vals[1]) * $vals[2];
+                }
+                else {
+                    $problem = "( {$vals[1]} - {$vals[0]} ) × {$vals[2]}";
+                    $result = ($vals[1] - $vals[0]) * $vals[2];
+                }
+                break;
+        }
+        $this->expected = "{$result}";
+        $this->challenge = $settings->debug ? "{$problem} = {$result}" : $this->asImage($problem, $settings, 30);
+    }
+
+    private function asImage($challenge, $settings, $height = 50) 
+    {
+        $nChars = strlen($challenge);
+        // Calculate the width based on the number of characters.
+        $width = $height / 2 * $nChars;
+
+        // Set the fontsize smaller than the height. 60% is good for the font used.
+        $fontSize = $height * 0.7;
+        
+        // Create the image.
+        if (false === ($img = imagecreate($width, $height)))
+        {
+            $this->error = "Cannot initialize GD image stream ({$width}, {$height}).";
+            return false;
+        }
+        $bc = imagecolorallocate($img, $settings->backgroundColor->R, $settings->backgroundColor->G, $settings->backgroundColor->B);
+        $tc = imagecolorallocate($img, $settings->textColor->R, $settings->textColor->G, $settings->textColor->B);
+
+        // Fill the background.
+        imagefill($img, 0, 0, $bc);
+        
+        // Create a textbox.
+        if (false === ($box = imagettfbbox($fontSize, 0, $this->font, $challenge))) {
+            $this->error = "Cannot create text [measuring].";
+            return false;
+        }
+        // Draw the text.
+        $x = ($width - $box[4]) / 2;
+        $y = ($height - $box[5]) / 2.2;
+        if (false === imagettftext($img, $fontSize, 0, $x, $y, $tc, $this->font, $challenge)) {
+            $this->error = "Cannot create text [drawing].";
+            return false;
+        }
+        // Get the image.
+        ob_start();
+        imagepng($img);
+        $png = ob_get_contents();
+        ob_end_clean();
+        imagedestroy($img);
+        // Create the img tag.
+        $data = base64_encode($png);
+        return "<img src=\"data:image/png;base64,{$data}\" alt=\"CAPTCHA\" />";
     }
 
     private function image($settings) 
     {
-        // Set the challenge.
-        if (empty($this->challenge)) $this->challenge = self::generateChallenge($settings->length);
+        // Set the expected result.
+        if (empty($this->expected)) $this->expected = self::generateChallenge($settings->length);
         
-        $font = dirname(__FILE__)."/AnonymousPro-Regular.ttf";
-        $output = self::generateImage($this->challenge, $settings, $font, 80);
-        if ($output !== false) $this->output = $output;
+        $challenge = $this->generateImage($this->expected, $settings, 80);
+        if ($challenge !== false) $this->challenge = $challenge;
     }
 
 
-    private static function generateImage($challenge, $settings, $font, $height = 80)
+    private function generateImage($challenge, $settings, $height = 80)
     {
         $nChars = strlen($challenge);
         // Calculate the width based on the number of characters.
@@ -252,7 +429,7 @@ class CaptchaGenerator
             imageline($img, mt_rand(0, $width), mt_rand(0, $height), mt_rand(0, $width), mt_rand(0, $height), $nc);	
         }
         // Create a textbox.
-        if (false === ($box = imagettfbbox($fontSize, 0, $font, $challenge))) {
+        if (false === ($box = imagettfbbox($fontSize, 0, $this->font, $challenge))) {
             $this->error = "Cannot create text [measuring].";
             return false;
         }
@@ -263,7 +440,7 @@ class CaptchaGenerator
             $x = $width * 0.075 + $charWidth * $i;
             // Vary the angle.
             $a = mt_rand($settings->angle * -1, $settings->angle);
-            if (false === imagettftext($img, $fontSize, $a, $x, $y, $tc, $font, substr($challenge, $i, 1))) {
+            if (false === imagettftext($img, $fontSize, $a, $x, $y, $tc, $this->font, substr($challenge, $i, 1))) {
                 $this->error = "Cannot create text [drawing].";
                 return false;
             }
@@ -320,6 +497,8 @@ class CaptchaSettings
     public $complexity;
     public $minvalue;
     public $maxvalue;
+    // Custom CAPTCHA
+    public $custom;
     // Display
     public $intro;
     public $label;
@@ -342,25 +521,49 @@ class CaptchaSettings
         $this->blobSecret = $module->getSystemSetting("nedcaptcha_blobsecret");
         $this->blobHmac = $module->getSystemSetting("nedcaptcha_blobhmac");
 
-        // Only in the context of a project
+        // Only in the context of a project.
         if ($this->isProject) {
             $this->type = $this->getValue("nedcaptcha_type", "math");
+            // Image.
             $this->length = $this->getValue("nedcaptcha_length", 6, true);
-            $this->complexity = $this->getValue("nedcaptcha_complexity", "simple");
-            $this->minvalue = $this->getValue("nedcaptcha_minvalue", 1, true);
-            $this->maxvalue = $this->getValue("nedcaptcha_maxvalue", 10, true);
-            $this->intro = $this->getValue("nedcaptcha_intro", null);
-            $this->label = $this->getValue("nedcaptcha_label", $this->type == "image" ? "Please type in the text exactly as displayed" : "Please solve this math problem:");
-            $this->submit = $this->getValue("nedcaptcha_submit", "Submit");
-            $this->failmsg = $this->getValue("nedcaptcha_failmsg", "Validation failed. Please try again.");
-            $this->textColor = Color::Parse($this->getValue("nedcaptcha_textcolor", "#800000"));
-            $this->backgroundColor = Color::Parse($this->getValue("nedcaptcha_backgroundcolor", "f3f3f3"));
-            $this->noiseColor = Color::Parse($this->getValue("nedcaptcha_noisecolor", "#333333"));
             $angles = array("none" => 0, "slight" => 7, "medium" => 11, "strong" => 15);
             $this->angle = $angles[$this->getValue("nedcaptcha_anglevariation", "medium")];
             $densities = array("off" => 0, "low" => 0.6, "medium" => 1, "high" => 1.8);
             $this->noiseDensity = $densities[$this->getValue("nedcaptcha_noisedensity", "medium")];
             $this->reuse = $this->getValue("nedcaptcha_reuse", false);
+            $this->noiseColor = Color::Parse($this->getValue("nedcaptcha_noisecolor", "#333333"));
+            // Math.
+            $this->complexity = $this->getValue("nedcaptcha_complexity", "simple");
+            $this->minvalue = $this->getValue("nedcaptcha_minvalue", 1, true);
+            $this->maxvalue = $this->getValue("nedcaptcha_maxvalue", 10, true);
+            // Image and Math.
+            $this->textColor = Color::Parse($this->getValue("nedcaptcha_textcolor", "#800000"));
+            $this->backgroundColor = Color::Parse($this->getValue("nedcaptcha_backgroundcolor", "f3f3f3"));
+            // Custom.
+            $customRaw = explode("\n",trim($this->getValue("nedcaptcha_custom", "")));
+            $custom = array();
+            foreach ($customRaw as $line) {
+                $items = explode("=", $line);
+                if (count($items) == 2) {
+                    array_push($custom, array ("challenge" => trim($items[0]), "response" => trim($items[1])));
+                }
+            }
+            $this->custom = $custom;
+            // Display.
+            $this->intro = $this->getValue("nedcaptcha_intro", null);
+            $this->label = $this->getValue("nedcaptcha_label", "");
+            if (!strlen($this->label)) {
+                switch($this->type) {
+                    case "image":
+                        $this->label = "Please type in the text exactly as displayed";
+                        break;
+                    case "math":
+                        $this->label =  "Please solve this math problem:";
+                        break;
+                }
+            }
+            $this->submit = $this->getValue("nedcaptcha_submit", "Submit");
+            $this->failmsg = $this->getValue("nedcaptcha_failmsg", "Validation failed. Please try again.");
         }
     }
 
