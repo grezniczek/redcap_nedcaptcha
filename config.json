@@ -1,7 +1,7 @@
 {
     "name": "nedCAPTCHA",
     "namespace": "RUB\\NEDCaptchaExternalModule",
-    "description": "Adds CATPCHA protection to surveys. <strong><a href=\"https://github.com/grezniczek/redcap-nedcaptcha\">See full documentation here</a></strong>.",
+    "description": "Adds CATPCHA protection to surveys. <strong><a href=\"https://github.com/grezniczek/redcap_nedcaptcha\">See full documentation here</a></strong>.",
     "framework-version": 2,
     "permissions": [
         "redcap_survey_page_top"
