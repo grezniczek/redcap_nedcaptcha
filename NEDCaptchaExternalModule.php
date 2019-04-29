@@ -422,14 +422,9 @@ class CaptchaGenerator
 
         // Fill the background.
         imagefill($img, 0, 0, $bc);
-        
-        // Draw random background dots.
+        // Draw random dots.
         for ($i = 0; $i < $width * $height * 0.1 * $settings->noiseDensity; $i++) {
             imagefilledellipse($img, mt_rand(0, $width), mt_rand(0, $height), 1, 1, $nc);
-        }
-        // Draw random lines.
-        for ($i = 0; $i < $width * 0.3 * $settings->noiseDensity; $i++) {
-            imageline($img, mt_rand(0, $width), mt_rand(0, $height), mt_rand(0, $width), mt_rand(0, $height), $nc);	
         }
         // Create a textbox.
         if (false === ($box = imagettfbbox($fontSize, 0, $this->font, $challenge))) {
@@ -447,6 +442,10 @@ class CaptchaGenerator
                 $this->error = "Cannot create text [drawing].";
                 return false;
             }
+        }
+        // Draw random lines.
+        for ($i = 0; $i < $width * 0.3 * $settings->noiseDensity; $i++) {
+            imageline($img, mt_rand(0, $width), mt_rand(0, $height), mt_rand(0, $width), mt_rand(0, $height), $nc);	
         }
         // Get the image.
         ob_start();
