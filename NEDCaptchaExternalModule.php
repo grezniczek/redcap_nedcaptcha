@@ -72,9 +72,34 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             $challenge = $this->settings->type == "custom" && !strlen($this->settings->label) ? "" : $captcha->challenge;
             // Need to specify the action and add _startover or else REDCap will swallow the survey instructions, as we arrive with a POST and not a GET.
             $action = APP_PATH_SURVEY_FULL . "?" . $_SERVER["QUERY_STRING"] . (strpos($_SERVER["QUERY_STRING"], "__startover") ? "" : "&__startover");
+            $logo = "";
+            if (is_numeric($GLOBALS["logo"])) {
+                //Set max-width for logo (include for mobile devices)
+                $logo_width = (isset($GLOBALS["isMobileDevice"]) && $GLOBALS["isMobileDevice"]) ? '300' : '600';
+                // Get img dimensions (local file storage only)
+                $thisImgMaxWidth = $logo_width;
+                $styleDim = "max-width:{$thisImgMaxWidth}px;";
+                list ($thisImgWidth, $thisImgHeight) = \Files::getImgWidthHeightByDocId($GLOBALS["logo"]);
+                if (is_numeric($thisImgHeight)) {
+                    $thisImgMaxHeight = round($thisImgMaxWidth / $thisImgWidth * $thisImgHeight);
+                    if ($thisImgWidth < $thisImgMaxWidth) {
+                        // Use native dimensions.
+                        $styleDim = "width:{$thisImgWidth}px;max-width:{$thisImgWidth}px;height:{$thisImgHeight}px;max-height:{$thisImgHeight}px;";
+                    } else {
+                        // Shrink size.
+                        $styleDim = "width:{$thisImgMaxWidth}px;max-width:{$thisImgMaxWidth}px;height:{$thisImgMaxHeight}px;max-height:{$thisImgMaxHeight}px;";
+                    }
+                }
+                $logo .= "<div style=\"padding:10px 0 0;\"><img id=\"survey_logo\" onload=\"try{reloadSpeakIconsForLogo()}catch(e){}\" " .
+                    "src=\"".APP_PATH_SURVEY."index.php?pid={$project_id}&doc_id_hash=".\Files::docIdHash($GLOBALS["logo"]) .
+                    "&__passthru=".urlencode("DataEntry/image_view.php")."&s={$GLOBALS["hash"]}&id={$GLOBALS["logo"]}\" alt=\"" . 
+                    js_escape($GLOBALS["lang"]["survey_1140"])."\" title=\"".js_escape($GLOBALS["lang"]["survey_1140"]) .
+                    "\" style=\"max-width:{$logo_width}px;$styleDim\"></div>";
+            }
             $template = file_get_contents(dirname(__FILE__)."/ui.html");
             $replace = array(
                 "{PREFIX}" => $this->PREFIX,
+                "{LOGO}" => $logo,
                 "{ACTION}" => $action,
                 "{SURVEYTITLE}" => $GLOBALS["title"],
                 "{INSTRUCTIONS}" => $this->settings->intro,
