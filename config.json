@@ -16,20 +16,20 @@
     "system-settings": [
         {
             "key": "nedcaptcha_globaldebug",
-            "name": "Global - Debug Mode",
+            "name": "Global - debug mode",
             "type": "checkbox"
         }
     ],
     "project-settings": [
         {
             "key": "nedcaptcha_debug",
-            "name": "Debug Mode",
+            "name": "Debug mode",
             "type": "checkbox",
             "super-users-only": true
         },
         {
             "key": "nedcaptcha_type",
-            "name": "CAPTCHA Type (default: Math)",
+            "name": "CAPTCHA type (default: Math)",
             "type": "dropdown",
             "choices": [
                 { "value": "none", "name": "None (Inactive)" },
@@ -225,18 +225,23 @@
             }
         },
         {
+            "key": "nedcaptcha_uiinfo",
+            "name": "The texts displayed on the CAPTCHA page can be customized using the following settings.",
+            "type": "descriptive"
+        },
+        {
             "key": "nedcaptcha_intro",
-            "name": "Text to be displayed below the survey title (by default, no text is displayed)",
+            "name": "Introduction - Text to be displayed below the survey title (by default, no text is displayed)",
             "type": "textarea"
         },
         {
             "key": "nedcaptcha_label",
-            "name": "Text to be displayed as the CAPTCHA label (depending on the CAPTCHA type, this defaults to 'Please type in the text exactly as displayed', 'Please solve this math problem:', or no text in case of 'Custom')",
+            "name": "Label - Text to be displayed as the CAPTCHA label (depending on the CAPTCHA type, this defaults to 'Please type in the text exactly as displayed', 'Please solve this math problem:', or no text in case of 'Custom')",
             "type": "textarea"
         },
         {
             "key": "nedcaptcha_submit",
-            "name": "Submit label (defaults to 'Submit')",
+            "name": "Button - Submit label (defaults to 'Submit')",
             "type": "text"
         },
         {
