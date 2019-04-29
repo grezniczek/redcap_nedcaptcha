@@ -72,10 +72,11 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             $challenge = $this->settings->type == "custom" && !strlen($this->settings->label) ? "" : $captcha->challenge;
             // Need to specify the action and add _startover or else REDCap will swallow the survey instructions, as we arrive with a POST and not a GET.
             $action = APP_PATH_SURVEY_FULL . "?" . $_SERVER["QUERY_STRING"] . (strpos($_SERVER["QUERY_STRING"], "__startover") ? "" : "&__startover");
+            $isMobile = isset($GLOBALS["isMobileDevice"]) && $GLOBALS["isMobileDevice"];
             $logo = "";
             if (is_numeric($GLOBALS["logo"])) {
                 //Set max-width for logo (include for mobile devices)
-                $logo_width = (isset($GLOBALS["isMobileDevice"]) && $GLOBALS["isMobileDevice"]) ? '300' : '600';
+                $logo_width = $isMobile ? '300' : '600';
                 // Get img dimensions (local file storage only)
                 $thisImgMaxWidth = $logo_width;
                 $styleDim = "max-width:{$thisImgMaxWidth}px;";
@@ -96,7 +97,8 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
                     js_escape($GLOBALS["lang"]["survey_1140"])."\" title=\"".js_escape($GLOBALS["lang"]["survey_1140"]) .
                     "\" style=\"max-width:{$logo_width}px;$styleDim\"></div>";
             }
-            $template = file_get_contents(dirname(__FILE__)."/ui.html");
+            $mobile = $isMobile ? "_mobile" : "";
+            $template = file_get_contents(dirname(__FILE__)."/ui{$mobile}.html");
             $replace = array(
                 "{PREFIX}" => $this->PREFIX,
                 "{LOGO}" => $logo,
