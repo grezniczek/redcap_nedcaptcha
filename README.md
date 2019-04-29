@@ -53,7 +53,7 @@ _Image-specific settings:_
 
 - **Angle variation:** Determines the amount of random rotation that is applied to individual characters. Can be set to _'None'_ (no rotation), _'Slight'_ (up to ±7°), _'Medium'_ (up to ±11°; this is the default setting), or _'Strong'_ (up to ±15°).
 
-- **Noise density:** Determins the amount of noise that is added to the image: _'Off'_ (no noise), _'Low'_ (a low amount of noise, 60% of the default amount), _'Medium'_ (the default amount), or _'High'_ (180% of the default amount).
+- **Noise density:** Determins the amount of noise that is added to the image: _'Off'_ (no noise), _'Low'_ (a low amount of noise, 60% of the default amount), _'Medium'_ (the default amount), or _'High'_ (150% of the default amount).
 
 _Color settings (math and image CAPTCHAs):_
 

@@ -530,7 +530,7 @@ class CaptchaSettings
             $this->length = $this->getValue("nedcaptcha_length", 6, true);
             $angles = array("none" => 0, "slight" => 7, "medium" => 11, "strong" => 15);
             $this->angle = $angles[$this->getValue("nedcaptcha_anglevariation", "medium")];
-            $densities = array("off" => 0, "low" => 0.6, "medium" => 1, "high" => 1.8);
+            $densities = array("off" => 0, "low" => 0.6, "medium" => 1, "high" => 1.5);
             $this->noiseDensity = $densities[$this->getValue("nedcaptcha_noisedensity", "medium")];
             $this->reuse = $this->getValue("nedcaptcha_reuse", false);
             $this->noiseColor = Color::Parse($this->getValue("nedcaptcha_noisecolor", "#333333"));
