@@ -10,6 +10,8 @@ To protect a public survey with a CAPTCHA. While REDCap 8.11.0 and newer provide
 
 When enabled in a project, the module will protect the public survey with a CAPTCHA (either a classic image CAPTCHA with distorted text, a math problem, or a custom challenge). A user will first have to complete the CAPTCHA challenge before being allowed to proceed to the survey. The captcha has to be completed at most once per user session.
 
+![Screenshot](nedcaptcha.png "Example")
+
 The _Custom_ CAPTCHA option could be used to implement simple password protection of a survey. Only users who know the 'password' can then access the survey.
 
 ## Requirements
