@@ -101,6 +101,7 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             $template = file_get_contents(dirname(__FILE__)."/ui{$mobile}.html");
             $replace = array(
                 "{PREFIX}" => $this->PREFIX,
+                "{GUID}" => self::GUID(),
                 "{LOGO}" => $logo,
                 "{ACTION}" => $action,
                 "{SURVEYTITLE}" => $GLOBALS["title"],
@@ -218,6 +219,17 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
     {
         $key = openssl_random_pseudo_bytes($keySize);
         return base64_encode($key);
+    }
+
+    /**
+     * Generates a GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
+     */
+    public static function GUID() 
+    {
+        if (function_exists('com_create_guid') === true) {
+            return strtolower(trim(com_create_guid(), '{}'));
+        }
+        return strtolower(sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535)));
     }
 
 } // NEDCaptchaExternalModule

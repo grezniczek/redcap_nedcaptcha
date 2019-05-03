@@ -17,7 +17,7 @@
     </table>
 </div>
 <div id="surveyinstructions">{INSTRUCTIONS}</div>
-<form id="{PREFIX}-form" name="{PREFIX}-form" method="POST" action="{ACTION}">
+<form id="{PREFIX}-form" name="{PREFIX}-form" method="POST" action="{ACTION}" autocomplete="off">
     <div>
         <table role="presentation" class="form_border container-fluid" style="display:table;" id="questiontable">
             <tbody class="formtbody">
@@ -28,7 +28,7 @@
                         <div id="{PREFIX}-captcha">{CAPTCHA}</div>
                     </td>
                     <td class="data col-5">
-                        <input spellcheck="false" autofocus aria-labelledby="{PREFIX}-label-answer" class="x-form-text x-form-field" type="text" name="{PREFIX}-response" id="{PREFIX}-response" value="" tabindex="0"/>
+                        <input autocomplete="{GUID}" spellcheck="false" autofocus aria-labelledby="{PREFIX}-label-answer" class="x-form-text x-form-field" type="text" name="{PREFIX}-response" id="{PREFIX}-response" value="" tabindex="0"/>
                     </td>
                 </tr>
                 <tr class="surveysubmit">
