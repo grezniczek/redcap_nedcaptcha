@@ -58,6 +58,8 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
         if (!$result["success"]) {
             // Pepare CAPTCHA.
             $captcha = new CaptchaGenerator($this->settings, $this->settings->reuse ? $result["challenge"] : null);
+            // Type of input - use number for math CAPTCHAs.
+            $type = $this->settings->type == "math" ? "number" : "text";
 
             // Prepare output.
             $blob = $this->toSecureBlob(array(
@@ -102,6 +104,7 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             $replace = array(
                 "{PREFIX}" => $this->PREFIX,
                 "{GUID}" => self::GUID(),
+                "{TYPE}" => $type,
                 "{LOGO}" => $logo,
                 "{ACTION}" => $action,
                 "{SURVEYTITLE}" => $GLOBALS["title"],
