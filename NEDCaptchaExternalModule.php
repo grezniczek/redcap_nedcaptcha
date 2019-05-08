@@ -599,15 +599,15 @@ class CaptchaSettings
             if (!strlen($this->label)) {
                 switch($this->type) {
                     case "image":
-                        $this->label = "Please type in the text exactly as displayed";
+                        $this->label = $module->tt("image_label"); // Please type in the text exactly as displayed
                         break;
                     case "math":
-                        $this->label =  "Please solve this math problem:";
+                        $this->label = $module->tt("math_label"); // Please solve this math problem:
                         break;
                 }
             }
-            $this->submit = $this->getValue("nedcaptcha_submit", "Submit");
-            $this->failmsg = $this->getValue("nedcaptcha_failmsg", "Validation failed. Please try again.");
+            $this->submit = $this->getValue("nedcaptcha_submit", $module->tt("submit_label")); // Submit
+            $this->failmsg = $this->getValue("nedcaptcha_failmsg", $module->tt("validation_failed")); // Validation failed. Please try again.
         }
     }
 
