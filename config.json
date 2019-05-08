@@ -2,6 +2,7 @@
     "name": "nedCAPTCHA",
     "namespace": "RUB\\NEDCaptchaExternalModule",
     "description": "Adds CATPCHA protection to surveys. <strong><a href=\"https://github.com/grezniczek/redcap_nedcaptcha\">See full documentation here</a></strong>.",
+    "tt_description": "desc",
     "framework-version": 2,
     "permissions": [
         "redcap_survey_page_top"
@@ -17,6 +18,7 @@
         {
             "key": "nedcaptcha_globaldebug",
             "name": "Global - debug mode",
+            "tt_name": "ss_debug",
             "type": "checkbox"
         }
     ],
@@ -24,23 +26,26 @@
         {
             "key": "nedcaptcha_debug",
             "name": "Debug mode",
+            "tt_name": "ps_debug",
             "type": "checkbox",
             "super-users-only": true
         },
         {
             "key": "nedcaptcha_type",
             "name": "CAPTCHA type (default: Math)",
+            "tt_name": "ps_type",
             "type": "dropdown",
             "choices": [
-                { "value": "none", "name": "None (Inactive)" },
-                { "value": "math", "name": "Simple Math Problem" },
-                { "value": "image", "name": "Distorted Text Image" },
-                { "value": "custom", "name": "Custom" }
+                { "value": "none", "name": "None (Inactive)", "tt_name": "ps_type_none" },
+                { "value": "math", "name": "Simple Math Problem", "tt_name": "ps_type_math" },
+                { "value": "image", "name": "Distorted Text Image", "tt_name": "ps_type_image" },
+                { "value": "custom", "name": "Custom", "tt_name": "ps_type_custom" }
             ]
         },
         {
             "key": "nedcaptcha_custominfo",
             "name": "You can define your own challenge-response pairs. Simply enter them in the text box below, one pair per line, separated by an equal sign (=). One of them will be randomly shown. The challenge is displayed as text. The response is not case-sensitive.",
+            "tt_name": "ps_custominfo",
             "type": "descriptive",
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -51,6 +56,7 @@
         {
             "key": "nedcaptcha_custom",
             "name": "Challenge and response pairs, one per line (e.g. The color of the sky? = Blue)",
+            "tt_name": "ps_custom",
             "type": "textarea",
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -61,6 +67,7 @@
         {
             "key": "nedcaptcha_mathinfo",
             "name": "Use the following settings to tailor math CAPTCHAs to your needs. The complexity of the problem can be set to 'Simple' (only additions) or 'Complex' (additions, subtractions, and multiplications). Finally, the range of values the operands can take can be specified.",
+            "tt_name": "ps_mathinfo",
             "type": "descriptive",
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -71,10 +78,11 @@
         {
             "key": "nedcaptcha_complexity",
             "name": "Complexity of the math question (defaults to 'Simple')",
+            "tt_name": "ps_complexity",
             "type": "radio",
             "choices": [
-                { "value": "simple", "name": "Simple" },
-                { "value": "complex", "name": "Complex" }
+                { "value": "simple", "name": "Simple", "tt_name": "ps_complexity_simple" },
+                { "value": "complex", "name": "Complex", "tt_name": "ps_complexity_complex" }
             ],
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -85,6 +93,7 @@
         {
             "key": "nedcaptcha_minvalue",
             "name": "Minimum operand value (defaults to 1)",
+            "tt_name": "ps_minvalue",
             "type": "text",
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -95,6 +104,7 @@
         {
             "key": "nedcaptcha_maxvalue",
             "name": "Maximum operand value (defaults to 10)",
+            "tt_name": "ps_maxvalue",
             "type": "text",
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -105,6 +115,7 @@
         {
             "key": "nedcaptcha_length",
             "name": "Length of the challenge text (defaults to 6 characters)",
+            "tt_name": "ps_length",
             "type": "text",
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -115,6 +126,7 @@
         {
             "key": "nedcaptcha_reuse",
             "name": "Keep the same challenge for retries (by default a new challenge is generated each time)",
+            "tt_name": "ps_reuse",
             "type": "checkbox",
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -125,12 +137,13 @@
         {
             "key": "nedcaptcha_anglevariation",
             "name": "Rotation of individual letters (defaults to 'Medium')",
+            "tt_name": "ps_anglevariation",
             "type": "radio",
             "choices": [
-                { "value": "none", "name": "None" },
-                { "value": "slight", "name": "Slight variation" },
-                { "value": "medium", "name": "Medium variation" },
-                { "value": "strong", "name": "Strong variation" }
+                { "value": "none", "name": "None", "tt_name": "ps_anglevariation_none" },
+                { "value": "slight", "name": "Slight variation", "tt_name": "ps_anglevariation_slight" },
+                { "value": "medium", "name": "Medium variation", "tt_name": "ps_anglevariation_medium" },
+                { "value": "strong", "name": "Strong variation", "tt_name": "ps_anglevariation_strong" }
             ],
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -141,12 +154,13 @@
         {
             "key": "nedcaptcha_noisedensity",
             "name": "Noise density (defaults to 'Medium')",
+            "tt_name": "ps_noisedensity",
             "type": "radio",
             "choices": [
-                { "value": "off", "name": "No noise (off)" },
-                { "value": "low", "name": "Low" },
-                { "value": "medium", "name": "Medium" },
-                { "value": "high", "name": "High" }
+                { "value": "off", "name": "No noise (off)", "tt_name": "ps_noisedensity_off" },
+                { "value": "low", "name": "Low", "tt_name": "ps_noisedensity_low" },
+                { "value": "medium", "name": "Medium", "tt_name": "ps_noisedensity_medium" },
+                { "value": "high", "name": "High", "tt_name": "ps_noisedensity_high" }
             ],
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -157,6 +171,7 @@
         {
             "key": "nedcaptcha_colorinfo",
             "name": "Colors can be specified in hex notation (e.g. #FF0000 or aabbcc) or as comma-separated RGB values (e.g. 255,0,0).",
+            "tt_name": "ps_colorinfo",
             "type": "descriptive",
             "branchingLogic": {
                 "type": "or",
@@ -177,6 +192,7 @@
         {
             "key": "nedcaptcha_textcolor",
             "name": "Text color (defaults to '#800000')",
+            "tt_name": "ps_textcolor",
             "type": "text",
             "branchingLogic": {
                 "type": "or",
@@ -197,6 +213,7 @@
         {
             "key": "nedcaptcha_backgroundcolor",
             "name": "Background color (defaults to '#f3f3f3')",
+            "tt_name": "ps_backgroundcolor",
             "type": "text",
             "branchingLogic": {
                 "type": "or",
@@ -217,6 +234,7 @@
         {
             "key": "nedcaptcha_noisecolor",
             "name": "Noise color (defaults to '#333333')",
+            "tt_name": "ps_noisecolor",
             "type": "text",
             "branchingLogic": {
                 "field": "nedcaptcha_type",
@@ -227,26 +245,31 @@
         {
             "key": "nedcaptcha_uiinfo",
             "name": "The texts displayed on the CAPTCHA page can be customized using the following settings.",
+            "tt_name": "ps_uiinfo",
             "type": "descriptive"
         },
         {
             "key": "nedcaptcha_intro",
             "name": "Introduction - Text to be displayed below the survey title (by default, no text is displayed)",
+            "tt_name": "ps_intro",
             "type": "textarea"
         },
         {
             "key": "nedcaptcha_label",
             "name": "Label - Text to be displayed as the CAPTCHA label (depending on the CAPTCHA type, this defaults to 'Please type in the text exactly as displayed', 'Please solve this math problem:', or no text in case of 'Custom')",
+            "tt_name": "ps_label",
             "type": "textarea"
         },
         {
             "key": "nedcaptcha_submit",
             "name": "Button - Submit label (defaults to 'Submit')",
+            "tt_name": "ps_submit",
             "type": "text"
         },
         {
             "key": "nedcaptcha_failmsg",
             "name": "Fail message (defaults to 'Validation failed. Please try again.')",
+            "tt_name": "ps_failmsg",
             "type": "textarea"
         }
     ],
