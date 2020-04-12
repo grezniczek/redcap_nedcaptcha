@@ -12,7 +12,7 @@ When enabled in a project, the module will protect the public survey with a CAPT
 
 ![Screenshot](nedcaptcha.png)
 
-The _Custom_ CAPTCHA option could be used to implement simple password protection of a survey. Only users who know the 'password' can then access the survey.
+The _Custom_ CAPTCHA option could be used to implement simple password protection of a survey. Only users who know the "password" can then access the survey.
 
 ## Requirements
 
@@ -85,3 +85,15 @@ _Customization of text elements of the CAPTCHA page:_
 - _Button:_ The label of the submit button (defaults to 'Submit').
 
 - _Fail message:_ The message that is shown upon failure to solve the CAPTCHA (shown below the submit button; defaults to 'Validation failed. Please try again.').
+
+## Testing
+
+Instructions for testing the module can be found [here](?prefix=redcap_nedcaptcha&page=tests/nedCAPTCHAManualTest.md).
+
+## Changelog
+
+Version | Changes
+------- | -----------
+1.0.2   | Add instructions for testing the module.
+1.0.1   | Bug fixes.
+1.0.0   | Initial release.
