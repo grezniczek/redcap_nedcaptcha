@@ -54,6 +54,17 @@ Version 1 - 2020-04-12
 1. Enter the correct text, click the "Button" and verify the following:
    - The normal survey is now displayed.
    - The survey can be filled out and submitted.
+1. Change the module configuration:
+   - Set _CAPTCHA type_ to "Custom".
+   - Set _Challenge and response pairs_ to "Question=Answer".
+1. Go to the _Survey Distribution Tools_ page and click on _Open public survey_.
+1. Verify the following:
+   - "Question" is displayed.
+1. Enter a wrong solution, click "Button", and verify the following:
+   - The "Fail message" is displayed.
+1. Enter "Answer", click the "Button" and verify the following:
+   - The normal survey is now displayed.
+   - The survey can be filled out and submitted.
 
 Done.
 
