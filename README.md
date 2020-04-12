@@ -1,4 +1,4 @@
-# REDCap nedCAPTCHA
+# nedCAPTCHA
 
 A REDCap External Module that adds CAPTCHA protection to public surveys without any dependencies on external services (hence the name ned = **n**o **e**xternal **d**ependencies).
 
