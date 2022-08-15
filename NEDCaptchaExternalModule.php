@@ -3,6 +3,7 @@ namespace RUB\NEDCaptchaExternalModule;
 
 
 use ExternalModules\AbstractExternalModule;
+use Throwable;
 
 /**
  * ExternalModule class for Patient Finder.
@@ -58,6 +59,10 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
         if (!$result["success"]) {
             // Pepare CAPTCHA.
             $captcha = new CaptchaGenerator($this->settings, $this->settings->reuse ? $result["challenge"] : null);
+            if (!empty($captcha->error) && $this->settings->show_errors) {
+                print "<div class=\"alert alert-danger\"><b>nedCAPTCHA error:</b> {$captcha->error}</div>";
+                $this->exitAfterHook();
+            }
             // Type of input - use number for math CAPTCHAs.
             $type = $this->settings->type == "math" ? "number" : "text";
 
@@ -398,39 +403,45 @@ class CaptchaGenerator
         // Set the fontsize smaller than the height. 60% is good for the font used.
         $fontSize = $height * 0.7;
         
-        // Create the image.
-        if (false === ($img = imagecreate($width, $height)))
-        {
-            $this->error = "Cannot initialize GD image stream ({$width}, {$height}).";
+        try {
+            // Create the image.
+            if (false === ($img = imagecreate($width, $height)))
+            {
+                $this->error = "Cannot initialize GD image stream ({$width}, {$height}).";
+                return false;
+            }
+            $bc = imagecolorallocate($img, $settings->backgroundColor->R, $settings->backgroundColor->G, $settings->backgroundColor->B);
+            $tc = imagecolorallocate($img, $settings->textColor->R, $settings->textColor->G, $settings->textColor->B);
+    
+            // Fill the background.
+            imagefill($img, 0, 0, $bc);
+            
+            // Create a textbox.
+            if (false === ($box = imagettfbbox($fontSize, 0, $this->font, $challenge))) {
+                $this->error = "Cannot create text [measuring].";
+                return false;
+            }
+            // Draw the text.
+            $x = ($width - $box[4]) / 2;
+            $y = ($height - $box[5]) / 2.2;
+            if (false === imagettftext($img, $fontSize, 0, $x, $y, $tc, $this->font, $challenge)) {
+                $this->error = "Cannot create text [drawing].";
+                return false;
+            }
+            // Get the image.
+            ob_start();
+            imagepng($img);
+            $png = ob_get_contents();
+            ob_end_clean();
+            imagedestroy($img);
+            // Create the img tag.
+            $data = base64_encode($png);
+            return "<img src=\"data:image/png;base64,{$data}\" alt=\"CAPTCHA\" />";
+        }
+        catch (Throwable $ex) {
+            $this->error = $ex->getMessage();
             return false;
         }
-        $bc = imagecolorallocate($img, $settings->backgroundColor->R, $settings->backgroundColor->G, $settings->backgroundColor->B);
-        $tc = imagecolorallocate($img, $settings->textColor->R, $settings->textColor->G, $settings->textColor->B);
-
-        // Fill the background.
-        imagefill($img, 0, 0, $bc);
-        
-        // Create a textbox.
-        if (false === ($box = imagettfbbox($fontSize, 0, $this->font, $challenge))) {
-            $this->error = "Cannot create text [measuring].";
-            return false;
-        }
-        // Draw the text.
-        $x = ($width - $box[4]) / 2;
-        $y = ($height - $box[5]) / 2.2;
-        if (false === imagettftext($img, $fontSize, 0, $x, $y, $tc, $this->font, $challenge)) {
-            $this->error = "Cannot create text [drawing].";
-            return false;
-        }
-        // Get the image.
-        ob_start();
-        imagepng($img);
-        $png = ob_get_contents();
-        ob_end_clean();
-        imagedestroy($img);
-        // Create the img tag.
-        $data = base64_encode($png);
-        return "<img src=\"data:image/png;base64,{$data}\" alt=\"CAPTCHA\" />";
     }
 
     private function image($settings) 
@@ -452,52 +463,58 @@ class CaptchaGenerator
         // Set the fontsize smaller than the height. 60% is good for the font used.
         $fontSize = $height * 0.6;
         
-        // Create the image.
-        if (false === ($img = imagecreate($width, $height)))
-        {
-            $this->error = "Cannot initialize GD image stream ({$width}, {$height}).";
-            return false;
-        }
-        $bc = imagecolorallocate($img, $settings->backgroundColor->R, $settings->backgroundColor->G, $settings->backgroundColor->B);
-        $tc = imagecolorallocate($img, $settings->textColor->R, $settings->textColor->G, $settings->textColor->B);
-        $nc = imagecolorallocate($img, $settings->noiseColor->R, $settings->noiseColor->G, $settings->noiseColor->B);
-
-        // Fill the background.
-        imagefill($img, 0, 0, $bc);
-        // Draw random dots.
-        for ($i = 0; $i < $width * $height * 0.1 * $settings->noiseDensity; $i++) {
-            imagefilledellipse($img, mt_rand(0, $width), mt_rand(0, $height), 1, 1, $nc);
-        }
-        // Create a textbox.
-        if (false === ($box = imagettfbbox($fontSize, 0, $this->font, $challenge))) {
-            $this->error = "Cannot create text [measuring].";
-            return false;
-        }
-        // Draw the text.
-        $charWidth = ($width * 0.85) / $nChars;
-        $y = ($height - $box[5]) / 2.2;
-        for ($i = 0; $i < strlen($challenge); $i++) {
-            $x = $width * 0.075 + $charWidth * $i;
-            // Vary the angle.
-            $a = mt_rand($settings->angle * -1, $settings->angle);
-            if (false === imagettftext($img, $fontSize, $a, $x, $y, $tc, $this->font, substr($challenge, $i, 1))) {
-                $this->error = "Cannot create text [drawing].";
+        try {
+            // Create the image.
+            if (false === ($img = imagecreate($width, $height)))
+            {
+                $this->error = "Cannot initialize GD image stream ({$width}, {$height}).";
                 return false;
             }
+            $bc = imagecolorallocate($img, $settings->backgroundColor->R, $settings->backgroundColor->G, $settings->backgroundColor->B);
+            $tc = imagecolorallocate($img, $settings->textColor->R, $settings->textColor->G, $settings->textColor->B);
+            $nc = imagecolorallocate($img, $settings->noiseColor->R, $settings->noiseColor->G, $settings->noiseColor->B);
+    
+            // Fill the background.
+            imagefill($img, 0, 0, $bc);
+            // Draw random dots.
+            for ($i = 0; $i < $width * $height * 0.1 * $settings->noiseDensity; $i++) {
+                imagefilledellipse($img, mt_rand(0, $width), mt_rand(0, $height), 1, 1, $nc);
+            }
+            // Create a textbox.
+            if (false === ($box = imagettfbbox($fontSize, 0, $this->font, $challenge))) {
+                $this->error = "Cannot create text [measuring].";
+                return false;
+            }
+            // Draw the text.
+            $charWidth = ($width * 0.85) / $nChars;
+            $y = ($height - $box[5]) / 2.2;
+            for ($i = 0; $i < strlen($challenge); $i++) {
+                $x = $width * 0.075 + $charWidth * $i;
+                // Vary the angle.
+                $a = mt_rand($settings->angle * -1, $settings->angle);
+                if (false === imagettftext($img, $fontSize, $a, $x, $y, $tc, $this->font, substr($challenge, $i, 1))) {
+                    $this->error = "Cannot create text [drawing].";
+                    return false;
+                }
+            }
+            // Draw random lines.
+            for ($i = 0; $i < $width * 0.3 * $settings->noiseDensity; $i++) {
+                imageline($img, mt_rand(0, $width), mt_rand(0, $height), mt_rand(0, $width), mt_rand(0, $height), $nc);	
+            }
+            // Get the image.
+            ob_start();
+            imagepng($img);
+            $png = ob_get_contents();
+            ob_end_clean();
+            imagedestroy($img);
+            // Create the img tag.
+            $data = base64_encode($png);
+            return "<img src=\"data:image/png;base64,{$data}\" alt=\"CAPTCHA\" />";
         }
-        // Draw random lines.
-        for ($i = 0; $i < $width * 0.3 * $settings->noiseDensity; $i++) {
-            imageline($img, mt_rand(0, $width), mt_rand(0, $height), mt_rand(0, $width), mt_rand(0, $height), $nc);	
+        catch (Throwable $ex) {
+            $this->error = $ex->getMessage();
+            return false;
         }
-        // Get the image.
-        ob_start();
-        imagepng($img);
-        $png = ob_get_contents();
-        ob_end_clean();
-        imagedestroy($img);
-        // Create the img tag.
-        $data = base64_encode($png);
-        return "<img src=\"data:image/png;base64,{$data}\" alt=\"CAPTCHA\" />";
     }
 
 
@@ -529,6 +546,7 @@ class CaptchaGenerator
 class CaptchaSettings 
 {
     public $debug;
+    public $show_errors;
     public $type;
     // Image CAPTCHA
     public $length;
@@ -560,6 +578,7 @@ class CaptchaSettings
         $this->isProject = isset($GLOBALS["project_id"]);
         $this->m = $module;
         $this->debug = $module->getSystemSetting("nedcaptcha_globaldebug") || ($this->isProject && $module->getProjectSetting("nedcaptcha_debug"));
+        $this->show_errors = ($this->isProject && $module->getProjectSetting("nedcaptcha_showerrors") == true);
 
         // Get or generate secrets to encrypt payloads.
         $this->blobSecret = $module->getSystemSetting("nedcaptcha_blobsecret");

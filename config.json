@@ -28,6 +28,11 @@
             "super-users-only": true
         },
         {
+            "key": "nedcaptcha_showerrors",
+            "name": "Show error messages in the browser",
+            "type": "checkbox"
+        },
+        {
             "key": "nedcaptcha_type",
             "name": "CAPTCHA type (default: Math)",
             "type": "dropdown",

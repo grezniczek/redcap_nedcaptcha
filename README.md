@@ -17,6 +17,7 @@ The _Custom_ CAPTCHA option could be used to implement simple password protectio
 ## Requirements
 
 - REDCAP 8.1.0 or newer (tested with REDCap 8.11.11 on a system running PHP 7.0.33).
+- The GD library **with FreeType** support must be installed in PHP.
 
 ## Installation
 
@@ -34,6 +35,8 @@ The _Custom_ CAPTCHA option could be used to implement simple password protectio
 ### Project-Level Settings
 
 - **Debug Mode:** When enabled, some additional information that may help troubleshooting will be printed to the Web-browser's console.
+
+- **Show error messages in the browser:** When enabled, error messages such as PHP exceptions are shown in the browser at the top of survey pages.
 
 - **CAPTCHA Type:** Sets the type of CAPTCHA that is used to protect the public survey.
   - _None:_ The CAPTCHA is deactivated.
@@ -94,6 +97,7 @@ Instructions for testing the module can be found [here](?prefix=redcap_nedcaptch
 
 Version | Changes
 ------- | -----------
+1.0.3   | Add the GD + FreeType requirement to the documentation. Improved error handling.
 1.0.2   | Add instructions for testing the module.
 1.0.1   | Bug fixes.
 1.0.0   | Initial release.
