@@ -77,8 +77,7 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             ));
             $label = $this->settings->type == "custom" && !strlen($this->settings->label) ? $captcha->challenge : $this->settings->label;
             $challenge = $this->settings->type == "custom" && !strlen($this->settings->label) ? "" : $captcha->challenge;
-            // Need to specify the action and add _startover or else REDCap will swallow the survey instructions, as we arrive with a POST and not a GET.
-            $action = APP_PATH_SURVEY_FULL . "?" . $_SERVER["QUERY_STRING"] . (strpos($_SERVER["QUERY_STRING"], "__startover") ? "" : "&__startover");
+            $action = APP_PATH_SURVEY_FULL. "?" . $_SERVER["QUERY_STRING"]; 
             $isMobile = isset($GLOBALS["isMobileDevice"]) && $GLOBALS["isMobileDevice"];
             $logo = "";
             if (is_numeric($GLOBALS["logo"])) {
@@ -128,6 +127,8 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
         }
         else {
             $_SESSION["{$this->PREFIX}-success"] = true;
+            // We need to redirect so we get regular behavior
+            redirect(APP_PATH_SURVEY_FULL. "?" . $_SERVER["QUERY_STRING"]);
         }
     }
 
