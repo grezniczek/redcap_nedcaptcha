@@ -12,22 +12,17 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
     
     private $settings;
 
-    function __construct()
-    {
-        // Need to call parent constructor first!
-        parent::__construct();
-        // Initialize settings.
-        $this->settings = new CaptchaSettings($this);
-    }
+    #region Hooks
 
     /**
      * Hook function that is executed for every survey page in projects where the module is enabled.
      */
-    function redcap_survey_page_top($project_id, $record, $instrument, $event_id, $group_id, $survey_hash, $response_id, $repeat_instance = 1) 
-    {
+    function redcap_survey_page_top($project_id, $record, $instrument, $event_id, $group_id, $survey_hash, $response_id, $repeat_instance = 1)  {
         // Skip the CAPTCHA if a record is already defined or it is set to inactive.
-        if (!empty($record) || $this->settings->type == "none") return false;
+        if (!empty($record)) return false;
         
+        $this->settings = new CaptchaSettings($this);
+        if ($this->settings->type == "none") return false;
 
         // Has the user already solved a CAPTCHA during her session? (Always show when debugging)
         if (!$this->settings->debug && isset($_SESSION["{$this->PREFIX}-success"]) && $_SESSION["{$this->PREFIX}-success"] === true) return false;
