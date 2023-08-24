@@ -12,7 +12,7 @@ class CaptchaGenerator
 
     public function __construct(CaptchaSettings $settings, $expected = null)
     {
-        $this->font = dirname(__FILE__)."../fonts/AnonymousPro-Regular.ttf";
+        $this->font = dirname(dirname(__FILE__))."/fonts/AnonymousPro-Regular.ttf";
         $this->expected = $expected;
         switch ($settings->type) {
             case "math":
