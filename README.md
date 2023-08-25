@@ -97,6 +97,7 @@ Instructions for testing the module can be found [here](?prefix=redcap_nedcaptch
 
 Version | Changes
 ------- | -----------
+1.0.5   | Bugfix: Prevent "hook not completed" error.
 1.0.4   | Updated behavior: Query params for setting fields is now supported (no need for _startover any longer).
 1.0.3   | Add the GD + FreeType requirement to the documentation. Improved error handling.
 1.0.2   | Add instructions for testing the module.
