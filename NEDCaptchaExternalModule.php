@@ -126,7 +126,9 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             $_SESSION["{$this->PREFIX}-success"] = true;
             // We need to redirect so we get regular behavior
             $this->exitAfterHook();
-            redirect(APP_PATH_SURVEY_FULL. "?" . $_SERVER["QUERY_STRING"]);
+            // Cannot call REDCap's redirect, as this will call exit
+            $url = APP_PATH_SURVEY_FULL. "?" . $_SERVER["QUERY_STRING"];
+            print "<script type=\"text/javascript\">window.location.href=\"$url\";</script>";
         }
     }
 
