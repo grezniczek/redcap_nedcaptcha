@@ -126,7 +126,7 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             $_SESSION["{$this->PREFIX}-success"] = true;
             // We need to redirect so we get regular behavior
             $url = APP_PATH_SURVEY_FULL. "?" . $_SERVER["QUERY_STRING"];
-            $this->redirectAfterHook($url, true);
+            $this->framework->redirectAfterHook($url, true);
         }
     }
 
