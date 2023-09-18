@@ -7,6 +7,7 @@ class CaptchaSettings
 {
     public $debug;
     public $show_errors;
+    public $always;
     public $type;
     // Image CAPTCHA
     public $length;
@@ -47,6 +48,7 @@ class CaptchaSettings
 
         // Only in the context of a project.
         if ($this->isProject) {
+            $this->always = $this->getValue("nedcaptcha_always", false);
             $this->type = $this->getValue("nedcaptcha_type", "math");
             // Image.
             $this->length = $this->getValue("nedcaptcha_length", 6, true);

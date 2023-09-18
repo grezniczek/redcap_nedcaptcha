@@ -13,6 +13,7 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
     
     private $settings;
     private $cipher = "AES-256-CBC";
+    const CAPTCHA_GET_NAME = "__captcha";
 
     #region Hooks
 
@@ -26,8 +27,28 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
         $this->settings = new CaptchaSettings($this);
         if ($this->settings->type == "none") return false;
 
-        // Has the user already solved a CAPTCHA during her session? (Always show when debugging)
-        if (!$this->settings->debug && isset($_SESSION["{$this->PREFIX}-success"]) && $_SESSION["{$this->PREFIX}-success"] === true) return false;
+        $redirected = false;
+        // Is this a redirect after successfull sovle?
+        $captcha_get_name = self::CAPTCHA_GET_NAME;
+        if (isset($_GET[$captcha_get_name]) && $_GET[$captcha_get_name] === $_SESSION["{$this->PREFIX}-check"]) {
+            print "<script>modifyURL(removeParameterFromURL(window.location.href, '$captcha_get_name'));</script>";
+            $redirected = true;
+        }
+        unset($_SESSION["{$this->PREFIX}-check"]);
+
+        if ($redirected && $_SESSION["{$this->PREFIX}-success"] === true) {
+            // Just solved the CAPTCHA
+            return false;
+        }
+        else if ($_SESSION["{$this->PREFIX}-success"] === true) {
+            // Solved previously, but do not let through when in debug mode or when required to solve every time
+            if ($this->settings->debug || $this->settings->always) {
+                // Do nothing
+            }
+            else {
+                return false;
+            }
+        }
         
         // Determine whehter this is a public survey.
         $survey_id = $GLOBALS["Proj"]->forms[$instrument]["survey_id"];
@@ -51,7 +72,7 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             if (!$result["success"]) $failMsgDisplay = "block";
         }
 
-        $debug = ""; //"<script>console.log('Debug Info');</script>";
+        $debug = ""; //"<script>console.log('Debug Info');</scrippt>";
 
         if (!$result["success"]) {
             // Pepare CAPTCHA.
@@ -123,11 +144,13 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             $this->exitAfterHook();
         }
         else {
+            $guid = self::GUID();
             $_SESSION["{$this->PREFIX}-success"] = true;
+            $_SESSION["{$this->PREFIX}-check"] = $guid;
             // We need to redirect so we get regular behavior
             $this->exitAfterHook();
             // Cannot call REDCap's redirect, as this will call exit
-            $url = APP_PATH_SURVEY_FULL. "?" . $_SERVER["QUERY_STRING"];
+            $url = APP_PATH_SURVEY_FULL. "?" . self::CAPTCHA_GET_NAME . "=" . $guid ."&" . $_SERVER["QUERY_STRING"];
             print "<script type=\"text/javascript\">window.location.href=\"$url\";</script>";
         }
     }

@@ -33,6 +33,11 @@
             "type": "checkbox"
         },
         {
+            "key": "nedcaptcha_always",
+            "name": "<b>Always</b> require the CAPTCHA to be answered (i.e., ask each time, even when requests originate from a browser where the CAPTCHA has been answered previously)",
+            "type": "checkbox"
+        },
+        {
             "key": "nedcaptcha_type",
             "name": "CAPTCHA type (default: Math)",
             "type": "dropdown",

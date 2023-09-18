@@ -38,6 +38,8 @@ The _Custom_ CAPTCHA option could be used to implement simple password protectio
 
 - **Show error messages in the browser:** When enabled, error messages such as PHP exceptions are shown in the browser at the top of survey pages.
 
+- **Always require the CAPTCHA to be answere:** When checked, the CAPTCHA will be presented on each (repeat) survey, even when the request originates from the same browser.
+
 - **CAPTCHA Type:** Sets the type of CAPTCHA that is used to protect the public survey.
   - _None:_ The CAPTCHA is deactivated.
   - _Simple Math Problem:_ A math problem will need to be solved to get to the survey. Solutings are never negative. The problem is shown as an image.
@@ -97,6 +99,7 @@ Instructions for testing the module can be found [here](?prefix=redcap_nedcaptch
 
 Version | Changes
 ------- | -----------
+1.1.0   | Add "Always ask" option.<br>Bugfix: Debug mode was not working as intended.
 1.0.6   | Re-Fix: Prevent "hook not completed" error.
 1.0.5   | Bugfix: Prevent "hook not completed" error.
 1.0.4   | Updated behavior: Query params for setting fields is now supported (no need for _startover any longer).
