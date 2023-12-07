@@ -16,7 +16,7 @@ The _Custom_ CAPTCHA option could be used to implement simple password protectio
 
 ## Requirements
 
-- REDCAP 8.1.0 or newer (tested with REDCap 8.11.11 on a system running PHP 7.0.33).
+- REDCap 11.1.5 or newer.
 - The GD library **with FreeType** support must be installed in PHP.
 
 ## Installation
@@ -99,6 +99,7 @@ Instructions for testing the module can be found [here](?prefix=redcap_nedcaptch
 
 Version | Changes
 ------- | -----------
+1.2.0   | Requires EM Framework version 8 (REDCap 11.1.5)
 1.1.0   | Add "Always ask" option.<br>Bugfix: Debug mode was not working as intended.
 1.0.6   | Re-Fix: Prevent "hook not completed" error.
 1.0.5   | Bugfix: Prevent "hook not completed" error.
