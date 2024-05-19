@@ -17,6 +17,16 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
 
     #region Hooks
 
+    function redcap_module_mlm_strings($project_id, $lang_keys) {
+        $strings = [];
+        foreach ($lang_keys as $key) {
+            if (starts_with($key, "default_label_")) {
+                $strings[$key] = $this->framework->tt("prompt_$key");
+            }
+        }
+        return $strings;
+    }
+
     /**
      * Hook function that is executed for every survey page in projects where the module is enabled.
      */
