@@ -263,7 +263,9 @@
             "name": "Introduction - Text to be displayed below the survey title (by default, no text is displayed)",
             "tt_name": "config_intro",
             "type": "textarea",
-            "translate": true
+            "translate": true,
+            "translation_prompt": "Text to be displayed below the survey title:",
+            "tt_translation_prompt": "prompt_config_intro"
         },
         {
             "key": "nedcaptcha_label",
