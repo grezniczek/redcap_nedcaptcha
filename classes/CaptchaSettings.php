@@ -53,10 +53,10 @@ class CaptchaSettings
             // Image.
             $this->length = $this->getValue("nedcaptcha_length", 6, true);
             $angles = array("none" => 0, "slight" => 7, "medium" => 11, "strong" => 15);
-            $this->angle = $angles[$this->getValue("nedcaptcha_anglevariation", "medium")];
+            $this->angle = $angles[$this->getValue("nedcaptcha_anglevariation", "medium")] ?? 11;
             $densities = array("off" => 0, "low" => 0.6, "medium" => 1, "high" => 1.5);
-            $this->noiseDensity = $densities[$this->getValue("nedcaptcha_noisedensity", "medium")];
-            $this->reuse = $this->getValue("nedcaptcha_reuse", false);
+            $this->noiseDensity = $densities[$this->getValue("nedcaptcha_noisedensity", "medium")] ?? 1;
+            $this->reuse = $this->getValue("nedcaptcha_reuse", false) !== false;
             $this->noiseColor = Color::Parse($this->getValue("nedcaptcha_noisecolor", "#333333"));
             // Math.
             $this->complexity = $this->getValue("nedcaptcha_complexity", "simple");
@@ -69,15 +69,15 @@ class CaptchaSettings
             $customRaw = explode("\n",trim($this->getValue("nedcaptcha_custom", "")));
             $custom = array();
             foreach ($customRaw as $line) {
-                $items = explode("=", $line);
+                $items = explode("=", htmlentities($line));
                 if (count($items) == 2) {
-                    array_push($custom, array ("challenge" => trim($items[0]), "response" => trim($items[1])));
+                    array_push($custom, array ("challenge" => strip_tags(trim($items[0])), "response" => trim($items[1])));
                 }
             }
             $this->custom = $custom;
             // Display.
-            $this->intro = $this->getValue("nedcaptcha_intro", null);
-            $this->label = $this->getValue("nedcaptcha_label", "");
+            $this->intro = strip_tags($this->getValue("nedcaptcha_intro", null));
+            $this->label = strip_tags($this->getValue("nedcaptcha_label", ""));
             if (!strlen($this->label)) {
                 switch($this->type) {
                     case "image":
@@ -88,8 +88,8 @@ class CaptchaSettings
                         break;
                 }
             }
-            $this->submit = $this->getValue("nedcaptcha_submit", "Submit");
-            $this->failmsg = $this->getValue("nedcaptcha_failmsg", "Validation failed. Please try again.");
+            $this->submit = strip_tags($this->getValue("nedcaptcha_submit", "Submit"));
+            $this->failmsg = strip_tags($this->getValue("nedcaptcha_failmsg", "Validation failed. Please try again."));
         }
     }
 

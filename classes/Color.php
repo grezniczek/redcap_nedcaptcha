@@ -35,7 +35,7 @@ class Color
                 $color = new Color($r, $g, $b, $a);
                 return $color;
             }
-       }
+        }
         else {
             // RegEx for #rrggbb[aa] format.
             $re = '/#?(?\'r\'[0-9a-fA-F]{2})(?\'g\'[0-9a-fA-F]{2})(?\'b\'[0-9a-fA-F]{2})(?\'a\'[0-9a-fA-F]{2})?/m';
