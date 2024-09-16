@@ -2,10 +2,7 @@
     "name": "nedCAPTCHA",
     "namespace": "RUB\\NEDCaptchaExternalModule",
     "description": "Adds CATPCHA protection to surveys. <strong><a href=\"https://github.com/grezniczek/redcap_nedcaptcha\">See full documentation here</a></strong>.",
-    "framework-version": 8,
-    "permissions": [
-        "redcap_survey_page_top"
-    ],
+    "framework-version": 14,
     "authors": [
         {
             "name": "Günther Rezniczek",
@@ -259,11 +256,5 @@
             "name": "Fail message (defaults to 'Validation failed. Please try again.')",
             "type": "textarea"
         }
-    ],
-    "compatibility": {
-        "php-version-min": "7.4.0",
-        "php-version-max": "",
-        "redcap-version-min": "11.1.5",
-        "redcap-version-max": ""
-     }
+    ]
 }
