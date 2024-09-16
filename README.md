@@ -99,6 +99,7 @@ Instructions for testing the module can be found [here](?prefix=redcap_nedcaptch
 
 Version | Changes
 ------- | -----------
+1.3.0   | Requires EM Framework version 14 (REDCap 13.7.3).<br>Additional input validations.
 1.2.0   | Requires EM Framework version 8 (REDCap 11.1.5)
 1.1.0   | Add "Always ask" option.<br>Bugfix: Debug mode was not working as intended.
 1.0.6   | Re-Fix: Prevent "hook not completed" error.
