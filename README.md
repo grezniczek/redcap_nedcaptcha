@@ -52,6 +52,8 @@ _Math-specific settings:_
 
 - **Minimum / Maximum operand values:** Sets the range of operand values. By default, the range of operand values is 1 to 10. In complex problems, the first operand my be set to a higher value to ensure a non-negative results when subtractions are present.
 
+- **Show as text:** By default, math problems are rendered as images to make it harder for bots to beat the CAPTCHA. With this option, the math problem will be rendered as text. This may be useful in order to support persons relying on screen readers to be able to complete the CAPTCHA.
+ 
 _Image-specific settings:_
 
 - **Length:** The length of the challenge text (defaults to 6 characters).
