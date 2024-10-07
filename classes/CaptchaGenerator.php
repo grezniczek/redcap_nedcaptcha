@@ -148,7 +148,17 @@ class CaptchaGenerator
                 break;
         }
         $this->expected = "{$result}";
-        $this->challenge = $settings->debug ? "{$problem} = {$result}" : $this->asImage($problem, $settings, 30);
+        $challenge = "";
+        if ($settings->debug) {
+            $challenge = "{$problem} = {$result}";
+        }
+        else if ($settings->usetext) {
+            $challenge = $problem;
+        }
+        else {
+            $challenge = $this->asImage($problem, $settings, 30);
+        }
+        $this->challenge = $challenge;
     }
 
     private function asImage($challenge, $settings, $height = 50) 

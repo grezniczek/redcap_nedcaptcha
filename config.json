@@ -110,6 +110,16 @@
             }
         },
         {
+            "key": "nedcaptcha_usetext",
+            "name": "Show the math problem as text (instead of as an image):",
+            "type": "checkbox",
+            "branchingLogic": {
+                "field": "nedcaptcha_type",
+                "op": "=",
+                "value": "math"
+            }
+        },
+        {
             "key": "nedcaptcha_length",
             "name": "Length of the challenge text (defaults to 6 characters)",
             "type": "text",

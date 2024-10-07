@@ -21,6 +21,7 @@ class CaptchaSettings
     public $complexity;
     public $minvalue;
     public $maxvalue;
+    public $usetext;
     // Custom CAPTCHA
     public $custom;
     // Display
@@ -62,6 +63,7 @@ class CaptchaSettings
             $this->complexity = $this->getValue("nedcaptcha_complexity", "simple");
             $this->minvalue = $this->getValue("nedcaptcha_minvalue", 1, true);
             $this->maxvalue = $this->getValue("nedcaptcha_maxvalue", 10, true);
+            $this->usetext = $this->getValue("nedcaptcha_usetext", false) == true;
             // Image and Math.
             $this->textColor = Color::Parse($this->getValue("nedcaptcha_textcolor", "#800000"));
             $this->backgroundColor = Color::Parse($this->getValue("nedcaptcha_backgroundcolor", "f3f3f3"));
