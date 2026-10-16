@@ -103,6 +103,7 @@ Instructions for testing the module can be found [here](?prefix=redcap_nedcaptch
 
 Version | Changes
 ------- | -----------
+1.4.3   | Prevent duplicate survey title and logo on the CAPTCHA page in newer REDCap versions while retaining compatibility with earlier versions.
 1.4.2   | Fix repo link.<br>Add citation info.
 1.4.1   | Better screenreader support.
 1.4.0   | Adds "Math as text" configuration option to support people relying on screen readers.
