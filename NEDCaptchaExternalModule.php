@@ -123,10 +123,16 @@ class NEDCaptchaExternalModule extends AbstractExternalModule {
             }
             $mobile = $isMobile ? "_mobile" : "";
             $template = file_get_contents(dirname(__FILE__)."/ui{$mobile}.html");
+            // Newer REDCap versions print the survey banner before this hook runs.
+            // Older versions print it afterward, so the CAPTCHA must provide its own.
+            $titleLogo = empty($GLOBALS["objHtmlPage"]->surveyBannerContent)
+                ? file_get_contents(dirname(__FILE__)."/ui_title.html")
+                : "";
             $replace = array(
                 "{PREFIX}" => $this->PREFIX,
                 "{GUID}" => self::GUID(),
                 "{TYPE}" => $type,
+                "{TITLELOGO}" => $titleLogo,
                 "{LOGO}" => $logo,
                 "{ACTION}" => $action,
                 "{SURVEYTITLE}" => $GLOBALS["title"],

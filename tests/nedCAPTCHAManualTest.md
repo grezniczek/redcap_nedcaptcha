@@ -26,6 +26,7 @@ Version 1 - 2020-04-12
 1. Go to the _Survey Distribution Tools_ page and click on _Open public survey_.
 1. Verify the following:
    - "Introduction" is shown under the survey title.
+   - The survey title appears exactly once. If a survey logo is configured, it also appears exactly once.
    - "Label" is shown as the label.
    - "Button" is shown as the button label.
    - The math problem is shown in red text on light red background.
@@ -35,6 +36,7 @@ Version 1 - 2020-04-12
 1. Verify the following:
    - A new problem is presented.
    - The message "Fail message" is displayed.
+   - The survey title and any configured logo still appear exactly once.
 1. Give a correct result and verify the following:
    - The normal survey is now displayed.
    - The survey can be filled out and submitted.
@@ -67,6 +69,8 @@ Version 1 - 2020-04-12
    - The survey can be filled out and submitted.
 
 Done.
+
+For compatibility checks, repeat the title and logo checks on REDCap versions both before and after the survey banner was moved ahead of the `redcap_survey_page_top` hook.
 
 ## Reporting Errors
 
