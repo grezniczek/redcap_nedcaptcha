@@ -130,7 +130,7 @@ Or by adding this reference to your BibTeX database:
 @software{Rezniczek_nedCAPTCHA_REDCap_External_Module_2025,
   author = {Rezniczek, Günther A.},
   title = {{nedCAPTCHA (REDCap External Module)}},
-  version = {1.4.2},
+  version = {1.4.3},
   year = {2025}
   month = {5},
   doi = {10.5281/zenodo.15411596},

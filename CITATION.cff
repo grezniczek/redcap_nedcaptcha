@@ -5,7 +5,7 @@ authors:
   given-names: "Günther A."
   orcid: "https://orcid.org/0000-0002-0852-6002"
 title: "nedCAPTCHA (REDCap External Module)"
-version: 1.4.2
+version: 1.4.3
 doi: 10.5281/zenodo.15411596
-date-released: 2025-05-14
+date-released: 2026-10-16
 url: "https://github.com/grezniczek/redcap_nedcaptcha"
